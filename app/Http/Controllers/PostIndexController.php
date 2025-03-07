@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
+use App\Http\Resources\PostResource;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -13,10 +13,10 @@ class PostIndexController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $posts = Post::all();
+        $posts = $request->user()->posts()->get();
 
         return Inertia::render('posts/index', [
-            'posts' => $posts,
+            'posts' => PostResource::collection($posts),
         ]);
     }
 }

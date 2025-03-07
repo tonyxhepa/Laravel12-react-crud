@@ -10,7 +10,9 @@ import {
 
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { useEffect } from "react";
+import { toast } from "sonner"
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -26,7 +28,20 @@ interface Post {
   image: string;
 }
 
+interface Flash {
+  success?: string;
+  danger?: string;
+}
+
 export default function PostIndex({ posts }: { posts: Post[] }) {
+    const { flash } = usePage<{ flash: Flash }>().props;
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+    }, [flash.success]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Posts" />
@@ -53,7 +68,10 @@ export default function PostIndex({ posts }: { posts: Post[] }) {
                          <TableCell>
                             <img src={post.image} alt={post.title} className="h-10 w-10 rounded-full object-cover" />
                          </TableCell>
-                         <TableCell className="text-right">Edt/delete</TableCell>
+                         <TableCell className="text-right">
+                            <Link href={route('posts.edit', post.id)} className="text-indigo-500 hover:text-indigo-600">Edit</Link>
+                            <Link href={route('posts.destroy', post.id)} method="delete" as="button" className="ml-2 text-red-500 hover:text-red-600">Delete</Link>
+                         </TableCell>
                        </TableRow>
                       ))}
                     </TableBody>
